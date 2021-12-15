@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Todo {
+
   String name; // 현재 진행여부
   bool isDone=false; // 할일
 
