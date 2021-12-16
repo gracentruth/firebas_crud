@@ -14,7 +14,7 @@ Future<void> main() async {
   await Firebase.initializeApp();
   runApp(MyApp());
 }
-
+int i=0;
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
@@ -37,7 +37,7 @@ class ToDoListPage extends StatefulWidget {
 class _ToDoListPageState extends State<ToDoListPage> {
   //리스트 저장 리스트
   final _items = <Todo>[];
-  FirebaseFirestore firestore = FirebaseFirestore.instance;
+  //FirebaseFirestore firestore = FirebaseFirestore.instance;
 
   var _todoController = TextEditingController();
 
@@ -47,9 +47,8 @@ class _ToDoListPageState extends State<ToDoListPage> {
     super.dispose();
   }
 
-  Widget _buildItemWidget(Todo todo) {
-    //final todo =Todo(doc['title'],isDone:doc['isdone']);
-
+  Widget _buildItemWidget(DocumentSnapshot doc) {
+    final todo =Todo(doc['name'],isDone:doc['isdone']);
     return ListTile(
       onTap: () {
         _toggleTodo(todo);
@@ -98,14 +97,27 @@ class _ToDoListPageState extends State<ToDoListPage> {
                 ),
               ],
             ),
-            Expanded(
-              child: ListView(
-                scrollDirection: Axis.vertical,
-                shrinkWrap: true,
-                children: _items.map((todo){ //map()은 foreach 돌리는 것과 같다.
-                  return _buildItemWidget(todo);
-                }).toList(),
-              ),
+            StreamBuilder<QuerySnapshot>( // Collection으로 부터 Query, snapshot을 통해 받아온 데이터 타입
+              stream: FirebaseFirestore.instance.collection('todo').snapshots(), // snapshot() : real-time Read를 위한 Stream을 받아오는 함수,이 스트림의 데이터가 변경되면 ~
+              builder: (context, snapshot) { //snapshot객체를 통해 데이터가 있는지 없는지 알 수 있다
+               // print(snapshot);
+               if(!snapshot.hasData){
+                 return CircularProgressIndicator();
+               }
+                final documents=snapshot.data!.docs;
+               // final documents=snapshot.data!.docs[i];
+               // i=i+1;
+               // print(documents['name']); 이렇게하면 특정 필드만 불러올 수 있음
+               return Expanded(
+                 child: ListView(
+                   scrollDirection: Axis.vertical,
+                   shrinkWrap: true,
+                   children: documents.map((doc){ //map()은 foreach 돌리는 것과 같다.
+                     return _buildItemWidget(doc);
+                   }).toList(),
+                 ),
+              );
+              }
             ),
           ],
         ),
@@ -114,7 +126,7 @@ class _ToDoListPageState extends State<ToDoListPage> {
   }
 
   void _addTodo(Todo todo) {
-    firestore.collection('todo').add({
+    FirebaseFirestore.instance.collection('todo').add({
       'name': todo.name,
       'isdone': todo.isDone,
     });
@@ -136,3 +148,5 @@ class _ToDoListPageState extends State<ToDoListPage> {
     });
   }
 }
+
+
