@@ -1,5 +1,6 @@
 # firebas_crud
 https://funncy.github.io/flutter/2021/03/06/firestore/
+
 1. Create
 - FirebaseFirestore.collection('컬렉션이름').add({'필드명':필드내,})
   doc이름을 지정해서 추
