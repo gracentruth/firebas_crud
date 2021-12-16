@@ -52,7 +52,7 @@ class _ToDoListPageState extends State<ToDoListPage> {
 
     return ListTile(
       onTap: () {
-        _toggleTodo(todo);
+        _toggleTodo(doc);
       },
       trailing: IconButton(
         icon: Icon(Icons.delete),
@@ -144,10 +144,11 @@ class _ToDoListPageState extends State<ToDoListPage> {
    FirebaseFirestore.instance.collection('todo').doc(doc.id).delete();
   }
 
-  void _toggleTodo(Todo todo) {
-    setState(() {
-      todo.isDone = !todo.isDone;
-    });
+  void _toggleTodo(DocumentSnapshot doc) {
+    FirebaseFirestore.instance.collection('todo').doc(doc.id).update({'isdone':!doc['isdone']});
+    // setState(() {
+    //   todo.isDone = !todo.isDone;
+    // });
   }
 }
 
