@@ -3,14 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Todo {
-
   String name; // 현재 진행여부
-  bool isDone=false; // 할일
+  bool isDone; // 할일
 
-  Todo(this.name);
+  Todo(this.name, {this.isDone = false});
 }
 
-Future<void> main() async{
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   runApp(MyApp());
@@ -38,7 +37,7 @@ class ToDoListPage extends StatefulWidget {
 class _ToDoListPageState extends State<ToDoListPage> {
   //리스트 저장 리스트
   final _items = <Todo>[];
-  FirebaseFirestore firestore=FirebaseFirestore.instance;
+  FirebaseFirestore firestore = FirebaseFirestore.instance;
 
   var _todoController = TextEditingController();
 
@@ -49,6 +48,8 @@ class _ToDoListPageState extends State<ToDoListPage> {
   }
 
   Widget _buildItemWidget(Todo todo) {
+    //final todo =Todo(doc['title'],isDone:doc['isdone']);
+
     return ListTile(
       onTap: () {
         _toggleTodo(todo);
@@ -61,10 +62,11 @@ class _ToDoListPageState extends State<ToDoListPage> {
       ),
       title: Text(
         todo.name,
-        style:todo.isDone? TextStyle(
-          decoration: TextDecoration.lineThrough,
-          fontStyle: FontStyle.italic
-        ):null,
+        style: todo.isDone
+            ? TextStyle(
+                decoration: TextDecoration.lineThrough,
+                fontStyle: FontStyle.italic)
+            : null,
       ),
     );
   }
@@ -100,7 +102,9 @@ class _ToDoListPageState extends State<ToDoListPage> {
               child: ListView(
                 scrollDirection: Axis.vertical,
                 shrinkWrap: true,
-                children: _items.map((todo) => _buildItemWidget(todo)).toList(),
+                children: _items.map((todo){ //map()은 foreach 돌리는 것과 같다.
+                  return _buildItemWidget(todo);
+                }).toList(),
               ),
             ),
           ],
@@ -111,12 +115,9 @@ class _ToDoListPageState extends State<ToDoListPage> {
 
   void _addTodo(Todo todo) {
     firestore.collection('todo').add({
-      'name':todo.name,
-      'isdone':todo.isDone,
-    }
-
-    );
-
+      'name': todo.name,
+      'isdone': todo.isDone,
+    });
     // setState(() {
     //   _items.add(todo);
     //   _todoController.clear();
@@ -129,9 +130,9 @@ class _ToDoListPageState extends State<ToDoListPage> {
     });
   }
 
-  void _toggleTodo(Todo todo){
+  void _toggleTodo(Todo todo) {
     setState(() {
-      todo.isDone=!todo.isDone;
+      todo.isDone = !todo.isDone;
     });
   }
 }
