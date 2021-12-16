@@ -24,3 +24,9 @@ samples, guidance on mobile development, and a full API reference.
 *StreamBuilder
    - setState는 전체를 build하지만 Streambuilder을 사용하면 해당 부분만 build된다. 
    - 비동기 작업에서의 문제점을 해결 
+    
+3. Update
+   FirebaseFirestore.instance.collection('todo').doc(doc.id).update({'isdone':!doc['isdone']});
+   
+4. Delete
+-  FirebaseFirestore.instance.collection('todo').doc(doc.id).delete();
