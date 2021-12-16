@@ -49,6 +49,7 @@ class _ToDoListPageState extends State<ToDoListPage> {
 
   Widget _buildItemWidget(DocumentSnapshot doc) {
     final todo =Todo(doc['name'],isDone:doc['isdone']);
+
     return ListTile(
       onTap: () {
         _toggleTodo(todo);
@@ -56,7 +57,7 @@ class _ToDoListPageState extends State<ToDoListPage> {
       trailing: IconButton(
         icon: Icon(Icons.delete),
         onPressed: () {
-          _deleteTodo(todo);
+          _deleteTodo(doc);
         },
       ),
       title: Text(
@@ -136,10 +137,11 @@ class _ToDoListPageState extends State<ToDoListPage> {
     // });
   }
 
-  void _deleteTodo(Todo todo) {
-    setState(() {
-      _items.remove(todo);
-    });
+  void _deleteTodo(DocumentSnapshot doc) {
+    // setState(() {
+    //   _items.remove(todo);
+    // });
+   FirebaseFirestore.instance.collection('todo').doc(doc.id).delete();
   }
 
   void _toggleTodo(Todo todo) {
